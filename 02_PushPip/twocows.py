@@ -17,8 +17,7 @@ def main():
 
     args = parser.parse_args()
 
-    cow1 = cowsay.cowsay(message=args.message1, cow=args.f, eyes=args.e,
-                         tongue=args.T)
+    cow1 = cowsay.cowsay(message=args.message1, cow=args.f, eyes=args.e)
     cow2 = cowsay.cowsay(message=args.message2, cow=args.F, eyes=args.E,
                          tongue=args.N)
 
