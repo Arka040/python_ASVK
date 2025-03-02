@@ -1,7 +1,12 @@
+#!/usr/bin/env python3
+
 import random
 import urllib.request
 import sys
 import argparse
+import cowsay
+import os
+
 
 def bullscows(guess: str, secret: str) -> tuple[int, int]:
     if len(guess) != len(secret):
@@ -89,14 +94,44 @@ def main():
         print("Ошибка: словарь пуст или не содержит подходящих слов.")
         sys.exit(1)
 
+    cow_list = cowsay.list_cows()
+
+    custom_cow = None
+    kitten_path = 'kitten.cow'
+
+    if os.path.isfile(kitten_path):
+        try:
+            with open(kitten_path) as f:
+                custom_cow = cowsay.read_dot_cow(f)
+            print(
+                f"Используется пользовательская корова из файла {kitten_path}")
+        except Exception as e:
+            print(f"Ошибка при чтении файла коровы: {e}")
+            custom_cow = None
+
     def ask(prompt, valid=None):
+        try:
+            if custom_cow:
+                print(cowsay.cowsay(prompt, cowfile=custom_cow))
+            else:
+                random_cow = random.choice(cow_list)
+                print(cowsay.cowsay(prompt, cow=random_cow))
+        except Exception as e:
+            print(f"Ошибка при использовании cowsay: {e}")
+            print(prompt)
+
         while True:
             try:
                 user_input = input(prompt).strip()
                 if valid is None or user_input in valid:
                     return user_input
-                print(
-                    f"Пожалуйста, введите слово из списка допустимых слов (длина: {len(valid[0])})")
+
+                error_msg = f"Пожалуйста, введите слово из списка допустимых слов (длина: {len(valid[0])})"
+                try:
+                    random_cow = random.choice(cow_list)
+                    print(cowsay.cowsay(error_msg, cow=random_cow))
+                except Exception:
+                    print(error_msg)
             except (EOFError, KeyboardInterrupt):
                 print("\nВыход из игры.")
                 sys.exit(0)
@@ -105,11 +140,25 @@ def main():
                 print("Пожалуйста, попробуйте снова.")
 
     def inform(format_string, bulls, cows):
-        print(format_string.format(bulls, cows))
+        message = format_string.format(bulls, cows)
+        try:
+            random_cow = random.choice(cow_list)
+            print(cowsay.cowsay(message, cow=random_cow))
+        except Exception as e:
+            print(f"Ошибка при использовании cowsay: {e}")
+            print(message)
 
     attempts = gameplay(ask, inform, words)
 
-    print(f"Поздравляем! Вы угадали слово за {attempts} попыток.")
+    final_message = f"Поздравляем! Вы угадали слово за {attempts} попыток."
+    try:
+        if custom_cow:
+            print(cowsay.cowsay(final_message, cowfile=custom_cow))
+        else:
+            random_cow = random.choice(cow_list)
+            print(cowsay.cowsay(final_message, cow=random_cow))
+    except Exception:
+        print(final_message)
 
 
 if __name__ == "__main__":
