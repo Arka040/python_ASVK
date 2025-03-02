@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-
 import random
 import urllib.request
 import sys
 import argparse
-
 
 def bullscows(guess: str, secret: str) -> tuple[int, int]:
     if len(guess) != len(secret):
